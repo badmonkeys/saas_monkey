@@ -143,6 +143,12 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
 .env*
   CODE
 
+  # =============================================================================
+  # setup databases
+  rails_command 'db:create'
+  rails_command 'db:migrate'
+  rails_command 'db:test:prepare'
+
 
 # TODO:
   # app env
