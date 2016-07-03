@@ -23,6 +23,7 @@ remove_default_gemfile
 add_source 'https://rubygems.org'
 
 gem 'autoprefixer-rails'
+gem 'bundler-audit'
 gem 'bootstrap'
 gem 'coffee-rails', '~> 4.2'
 gem 'dotenv'
@@ -61,6 +62,7 @@ gem_group :development, :test do
 end
 
 gem_group :production do
+  gem 'heroku-deflater'
   gem 'rails_12factor'
 end
 
@@ -73,10 +75,15 @@ after_bundle do
   remove_comments_for('config/database.yml')
   repo_get 'sample.env'
   run 'cp sample.env .env'
+  repo_get 'lib/app_env.rb'
+  initializer 'app_env.rb', <<-CODE
+require 'app_env'
+  CODE
 
   # =============================================================================
   # Setup RSpec
   run 'spring stop'
+  run 'rm -rf test/'
   generate 'rspec:install'
   uncomment_lines 'spec/rails_helper.rb', /Dir\[Rails\.root\.join/
   run 'rm spec/spec_helper.rb'
@@ -143,33 +150,16 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
   repo_get 'app/views/pages/pricing.haml'
   repo_get 'app/views/pages/about.haml'
 
-
-
-
-
-
-
-  # =============================================================================
-  # Setup Git
-  git :init
-  run 'rm .gitignore'
-  create_file '.gitignore', <<-CODE
-/.bundle
-
-# Ignore all logfiles and tempfiles.
-/log/*
-/tmp/*
-!/log/.keep
-!/tmp/.keep
-
-.byebug_history
-/coverage/*
-.env*
-  CODE
-
   # =============================================================================
   # setup databases
   rails_command 'db:drop db:create db:migrate db:test:prepare'
+
+  # =============================================================================
+  # Setup Git
+  run 'rm .gitignore'
+  repo_get '.gitignore'
+  git :init
+  git add: '.'
 
 # TODO:
   # app env
@@ -177,10 +167,6 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
   #   heroku setup
   # new relic
   #   heroku setup
-  # rails flashes in templates
-  # bundler audit
-  # RACK::Deflator
-  #   or heroku deflator
 
 end
 
