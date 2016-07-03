@@ -1,3 +1,4 @@
+$repo_url = 'https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master'
 
 def remove_comments_for(filename)
   gsub_file filename, /^\s*#.*\n/, ''
@@ -13,8 +14,7 @@ def append_to_file(filename, contents)
 end
 
 def repo_get(path)
-  repo_url = 'https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master'
-  get "#{repo_url}/#{path}", path
+  get "#{$repo_url}/#{path}", path
 end
 
 # =============================================================================
@@ -160,14 +160,5 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
   repo_get '.gitignore'
   git :init
   git add: '.'
-
-# TODO:
-  # app env
-  # bugsnag
-  #   heroku setup
-  # new relic
-  #   heroku setup
-
 end
-
 
