@@ -83,6 +83,9 @@ after_bundle do
 require 'app_env'
   CODE
 
+  log(:bad_monkey, 'there is a bug in asset compilation requiring a file to exist')
+  create_file 'app/assets/javascripts/channels/channel.js', ''
+
   # =============================================================================
   # Setup RSpec
   run 'spring stop'
