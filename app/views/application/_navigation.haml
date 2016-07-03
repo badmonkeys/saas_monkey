@@ -1,0 +1,19 @@
+%nav.navbar.navbar-full.navbar-dark.bg-inverse
+  %button.navbar-toggler.hidden-sm-up{ type: 'button' }
+    &#9776;
+  #navbarCollapse.collapse.navbar-toggleable-xs
+    %a.navbar-brand{ href: root_path }
+      <APP_NAME>
+    %ul.nav.navbar-nav
+      %li.nav-item.active
+        %a.nav-link{ href: root_path }
+          Home
+          %span.sr-only
+            (current)
+      %li.nav-item
+        %a.nav-link{ href: page_path('pricing') }
+          Pricing
+      %li.nav-item
+        %a.nav-link{ href: page_path('about') }
+          About
+
