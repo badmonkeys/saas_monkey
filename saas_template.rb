@@ -145,6 +145,7 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
   run 'rm app/helpers/application_helper.rb'
   repo_get 'app/views/application/_navigation.haml'
   repo_get 'app/views/layouts/application.html.erb'
+  gsub_file 'app/views/layouts/application.html.erb', /<APP_NAME>/, app_name.upcase
   repo_get 'app/helpers/application_helper.rb'
   gsub_file 'app/views/application/_navigation.haml', /<APP_NAME>/, app_name.upcase
 
