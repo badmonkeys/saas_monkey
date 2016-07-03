@@ -31,6 +31,7 @@ gem 'flipper-active_record', git: 'https://github.com/badmonkeys/flipper.git'
 gem 'haml'
 gem 'high_voltage'
 gem 'jquery-rails'
+gem 'newrelic_rpm'
 gem 'pg'
 gem 'pry-rails'
 gem 'puma', '~> 3.0'
@@ -159,6 +160,16 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
   run 'rm .gitignore'
   repo_get '.gitignore'
   git :init
-  git add: '.'
+
+  # =============================================================================
+  # Setup Heroku app
+  if yes?('Do you want to create a new heroku app for this project?')
+    run "heroku create #{app_name}"
+    run 'heroku plugins:install https://github.com/tpope/heroku-binstubs.git'
+    run "heroku binstubs:create #{app_name}"
+    run "production addons:create newrelic:wayne"
+    new_relic_key = `production config:get NEW_RELIC_LICENSE_KEY`
+    run "newrelic install --license_key='#{new_relic_key}' '#{app_name}'"
+  end
 end
 

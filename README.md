@@ -31,18 +31,24 @@ the cloned template can be used with
 $ rails new app_name -m /local/path/to/cloned/saas_template.rb
 ```
 
+## New Features!!
+#### Heroku App Creation
+The template now asks after installation if you'd like to create a new
+heroku app for this project.  If you answer "yes"-y (i.e. `y`, `Y`, or
+`yes`) it will create a new app using the heroku toolbelt and configure
+the free-tier of the NewRelic RPM addon.  It also uses [binstubs](https://github.com/tpope/heroku-binstubs)
+so that working with the heroku app has never been easier.  Simply use
+`production` when you want to use the heroku toolbelt like so:
+
+```
+$ production run console
+
+$ production logs
+
+$ production addons:create ...
+```
+
+
 ## Coming Soon
 _Currently Accepting Feature Requests, just create a new issue_
-
-* Heroku App Creation
-  - question based during the template application process
-  - app creation on heroku
-  - remote setting in local git
-  - [binstubs](https://github.com/tpope/heroku-binstubs)
-* Bugsnag Integration
-  - sets up the app with basic bugsnag setup
-  - properly configures addon on heroku (free-tier)
-* NewRelic Integration
-  - sets up the app with basic new relic setup
-  - properly configures addon on heroku (free-tier)
 
