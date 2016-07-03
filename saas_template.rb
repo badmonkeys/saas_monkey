@@ -169,7 +169,8 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
     run "heroku create #{app_name}"
     run 'heroku plugins:install https://github.com/tpope/heroku-binstubs.git'
     run "heroku binstubs:create #{app_name}"
-    run "production addons:create newrelic:wayne"
+    run 'production addons:create heroku-postgresql:hobby-dev'
+    run 'production addons:create newrelic:wayne'
     new_relic_key = `production config:get NEW_RELIC_LICENSE_KEY`
     run "newrelic install --license_key='#{new_relic_key}' '#{app_name}'"
   end
