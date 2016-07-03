@@ -1,6 +1,3 @@
-require 'pry'
-
-repo_url = 'https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master'
 
 def remove_comments_for(filename)
   gsub_file filename, /^\s*#.*\n/, ''
@@ -15,21 +12,29 @@ def append_to_file(filename, contents)
   open(filename, 'a') {|f| f.puts contents }
 end
 
+def repo_get(path)
+  repo_url = 'https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master'
+  get "#{repo_url}/#{path}", path
+end
+
 # =============================================================================
 # Gem setup
 remove_default_gemfile
 add_source 'https://rubygems.org'
 
+gem 'autoprefixer-rails'
 gem 'bootstrap'
 gem 'coffee-rails', '~> 4.2'
 gem 'dotenv'
 gem 'flipper-active_record', git: 'https://github.com/badmonkeys/flipper.git'
 gem 'haml'
+gem 'high_voltage'
 gem 'jquery-rails'
 gem 'pg'
 gem 'pry-rails'
 gem 'puma', '~> 3.0'
 gem 'rails', '~> 5.0.0'
+gem 'rails-assets-tether'
 gem 'sass-rails', '~> 5.0'
 gem 'sidekiq'
 gem 'turbolinks', '~> 5'
@@ -62,11 +67,12 @@ end
 after_bundle do
   # =============================================================================
   # General Setup
-  get "#{repo_url}/config/database.yml.sample", 'config/database.yml.sample'
+  repo_get 'config/database.yml.sample'
   run 'cp config/database.yml.sample config/database.yml'
   gsub_file 'config/database.yml', /<APP_NAME>/, app_name
   remove_comments_for('config/database.yml')
-  get "#{repo_url}/sample.env", '.env'
+  repo_get 'sample.env'
+  run 'cp sample.env .env'
 
   # =============================================================================
   # Setup RSpec
@@ -74,12 +80,12 @@ after_bundle do
   generate 'rspec:install'
   uncomment_lines 'spec/rails_helper.rb', /Dir\[Rails\.root\.join/
   run 'rm spec/spec_helper.rb'
-  get "#{repo_url}/spec/spec_helper.rb", 'spec/spec_helper.rb'
+  repo_get 'spec/spec_helper.rb'
   remove_comments_for 'spec/rails_helper.rb'
 
-  get "#{repo_url}/Guardfile", 'Guardfile'
-  get "#{repo_url}/spec/support/factory_girl.rb", 'spec/support/factory_girl.rb'
-  get "#{repo_url}/spec/support/database_cleaner.rb", 'spec/support/database_cleaner.rb'
+  repo_get 'Guardfile'
+  repo_get 'spec/support/factory_girl.rb'
+  repo_get 'spec/support/database_cleaner.rb'
   create_file 'spec/support/capybara.rb', <<-CODE
 require 'capybara/rspec'
   CODE
@@ -87,7 +93,7 @@ require 'capybara/rspec'
   # =============================================================================
   # setup Puma
   run 'rm config/puma.rb'
-  get "#{repo_url}/config/puma.rb", 'config/puma.rb'
+  repo_get 'config/puma.rb'
 
   # =============================================================================
   # Setup Sidekiq
@@ -115,9 +121,27 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
 @import 'bootstrap';
   CODE
   gsub_file 'app/assets/javascripts/application.js', /\/\/= require turbolinks/, <<-CODE
+//= require tether
 //= require bootstrap
 //= require turbolinks
   CODE
+
+  # =============================================================================
+  # Setup application layout
+  run 'rm app/views/layouts/application.html.erb'
+  run 'rm app/helpers/application_helper.rb'
+  repo_get 'app/views/application/_navigation.haml'
+  repo_get 'app/views/layouts/application.html.erb'
+  repo_get 'app/helpers/application_helper.rb'
+  gsub_file 'app/views/application/_navigation.haml', /<APP_NAME>/, app_name.upcase
+
+  # =============================================================================
+  # Setup HighVoltage for static pages
+  repo_get 'config/initializers/high_voltage.rb'
+  run 'mkdir app/views/pages'
+  repo_get 'app/views/pages/landing.haml'
+  repo_get 'app/views/pages/pricing.haml'
+  repo_get 'app/views/pages/about.haml'
 
 
 
@@ -145,14 +169,10 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
 
   # =============================================================================
   # setup databases
-  rails_command 'db:create'
-  rails_command 'db:migrate'
-  rails_command 'db:test:prepare'
-
+  rails_command 'db:drop db:create db:migrate db:test:prepare'
 
 # TODO:
   # app env
-  # clockwork
   # bugsnag
   #   heroku setup
   # new relic
@@ -161,7 +181,6 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
   # bundler audit
   # RACK::Deflator
   #   or heroku deflator
-  # high_voltage
 
 end
 
