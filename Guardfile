@@ -30,7 +30,7 @@ guard :rspec, cmd: "bundle exec spring rspec --drb" do
   rails.workers = /^app\/workers\/(.+)_controller\.rb$/
   dsl.watch_spec_files_for(rails.app_files)
 
-  watch(rails.workers) do |m|
+  watch(/^app\/jobs\/(.+)\.rb$/) do |m|
     puts "caught change to controller #{m}"
     rspec.spec.("workers/#{m[1]}")
   end
@@ -46,7 +46,7 @@ guard :rspec, cmd: "bundle exec spring rspec --drb" do
     ]
   end
 
-  watch(rails.models) do |m|
+  watch(/^app\/models\/(.+)\.rb$/) do |m|
     puts "caught change to model #{m}"
     [
       rspec.spec.("models/#{m[1]}")
