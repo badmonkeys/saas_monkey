@@ -26,7 +26,6 @@ gem 'autoprefixer-rails'
 gem 'bundler-audit'
 gem 'bootstrap'
 gem 'coffee-rails', '~> 4.2'
-gem 'dotenv'
 gem 'flipper-active_record', git: 'https://github.com/badmonkeys/flipper.git'
 gem 'haml'
 gem 'high_voltage'
@@ -51,6 +50,7 @@ end
 gem_group :development, :test do
   gem 'capybara'
   gem 'database_cleaner'
+  gem 'dotenv-rails'
   gem 'factory_girl_rails'
   gem 'foreman'
   gem 'guard-bundler', require: false
