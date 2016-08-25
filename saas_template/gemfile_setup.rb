@@ -1,5 +1,4 @@
-comment_lines 'Gemfile', ''
-remove_comments_for('Gemfile')
+run 'rn Gemfile'
 add_source 'https://rubygems.org'
 
 gem 'autoprefixer-rails'
