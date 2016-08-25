@@ -27,6 +27,7 @@ gem 'bullet'
 gem 'bundler-audit'
 gem 'bootstrap'
 gem 'coffee-rails', '~> 4.2'
+gem 'devise'
 gem 'flipper-active_record'
 gem 'goldiloader'
 gem 'haml'
@@ -77,6 +78,8 @@ after_bundle do
   remove_comments_for 'config/environments/test.rb'
   remove_comments_for 'config/environments/development.rb'
   remove_comments_for 'config/environments/production.rb'
+  remove_comments_for 'config/secrets.yml'
+  remove_comments_for 'config/routes.rb'
 
   # =============================================================================
   # General Setup
@@ -87,9 +90,11 @@ after_bundle do
   repo_get 'sample.env'
   run 'cp sample.env .env'
   repo_get 'lib/app_env.rb'
-  initializer 'app_env.rb', <<-CODE
-require 'app_env'
-  CODE
+  gsub_file 'config/application.rb', "require 'rails/all'", <<-EOF
+require 'rails/all'
+# load this lib now for access during configuration
+require './lib/app_env'
+EOF
 
   log(:bad_monkey, 'there is a bug in asset compilation requiring a file to exist')
   create_file 'app/assets/javascripts/channels/channel.js', ''
@@ -178,7 +183,7 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
     end',
     env: :development
 
-  environment 'config.after_initialize do
+    environment 'config.after_initialize do
       Bullet.tap do |b|
         b.enable        = true
         b.bullet_logger = true
@@ -186,6 +191,41 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
       end
     end',
     env: :test
+
+  # =============================================================================
+  # Setup Devise
+  generate 'devise:install'
+  %i(development test).each do |env|
+    environment "config.action_mailer.default_url_options = {
+        protocol: 'http', host: 'localhost', port: AppEnv.port
+      }",
+      env: env
+  end
+  environment "config.action_mailer.default_url_options = {
+      protocol: 'https',
+      host: AppEnv.default_host,
+      port: AppEnv.port
+    }",
+    env: :production
+
+  remove_comments_for 'config/initializers/devise.rb'
+  gsub_file 'config/initializers/devise.rb', /config.mailer_sender(.*)$/,
+    "config.mailer_sender = AppEnv.try(:mail_sender) || 'please-change-me-at-config-initializers-devise@example.com'"
+  generate 'devise User'
+  remove_comments_for 'app/models/user.rb'
+  generate 'devise:views users'
+  generate 'devise:controllers users'
+  gsub_file 'config/routes.rb', 'devise_for :users', <<-EOF
+devise_for :users,
+  controllers: {
+    sessions: 'users/sessions',
+    confirmations: 'users/confirmations',
+    passwords: 'users/passwords',
+    registrations: 'users/registrations',
+    unlocks: 'users/unlocks'
+  }
+EOF
+  run 'rm app/controllers/users/omniauth_callbacks_controller.rb'
 
   # =============================================================================
   # setup databases
