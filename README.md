@@ -50,5 +50,11 @@ $ production addons:create ...
 
 
 ## Coming Soon
-_Currently Accepting Feature Requests, just create a new issue_
+This entire template is going ot be refactored to use a multi-file
+appraoch that will make development and customization of the template
+install process _FAR_ easier.  The inspiration for this refactor is
+coming from [mattbrictson's](https://github.com/mattbrictson)
+[rails-template](https://github.com/mattbrictson/rails-template). I'm
+still undecided if a full repo clone is necessary, but the use of `.tt`
+templates is extremely tempting...
 
