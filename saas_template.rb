@@ -23,10 +23,12 @@ remove_default_gemfile
 add_source 'https://rubygems.org'
 
 gem 'autoprefixer-rails'
+gem 'bullet'
 gem 'bundler-audit'
 gem 'bootstrap'
 gem 'coffee-rails', '~> 4.2'
-gem 'flipper-active_record', git: 'https://github.com/badmonkeys/flipper.git'
+gem 'flipper-active_record'
+gem 'goldiloader'
 gem 'haml'
 gem 'high_voltage'
 gem 'jquery-rails'
@@ -70,6 +72,12 @@ gem_group :production do
 end
 
 after_bundle do
+  # =============================================================================
+  # General Setup
+  remove_comments_for 'config/environments/test.rb'
+  remove_comments_for 'config/environments/development.rb'
+  remove_comments_for 'config/environments/production.rb'
+
   # =============================================================================
   # General Setup
   repo_get 'config/database.yml.sample'
@@ -156,6 +164,28 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
   repo_get 'app/views/pages/landing.haml'
   repo_get 'app/views/pages/pricing.haml'
   repo_get 'app/views/pages/about.haml'
+
+  # =============================================================================
+  # Setup Bullet
+  environment 'config.after_initialize do
+      Bullet.tap do |b|
+        b.enable        = true
+        b.alert         = true
+        b.bullet_logger = true
+        b.console       = true
+        b.rails_logger  = true
+      end
+    end',
+    env: :development
+
+  environment 'config.after_initialize do
+      Bullet.tap do |b|
+        b.enable        = true
+        b.bullet_logger = true
+        b.raise         = true
+      end
+    end',
+    env: :test
 
   # =============================================================================
   # setup databases
