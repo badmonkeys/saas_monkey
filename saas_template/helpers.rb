@@ -4,11 +4,6 @@ def remove_comments_for(filename)
   gsub_file filename, /^\s*#.*\n/, ''
 end
 
-def remove_default_gemfile
-  comment_lines 'Gemfile', ''
-  remove_comments_for('Gemfile')
-end
-
 def append_to_file(filename, contents)
   open(filename, 'a') {|f| f.puts contents }
 end
