@@ -36,7 +36,7 @@ gem 'newrelic_rpm'
 gem 'pg'
 gem 'pry-rails'
 gem 'puma', '~> 3.0'
-gem 'rails', '~> 5.0.0'
+gem 'rails', '~> 5.0.0.1'
 add_source 'https://rails-assets.org' do
   gem 'rails-assets-tether'
 end
