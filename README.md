@@ -5,33 +5,38 @@ _Inspiration for the recent restructure from [Matt Brictson's][]
 A custom template and supporting files to generate a new Rails 5 SaaS
 application.
 
-## Setup
-The template requires that you have rails 5 installed so before using it
+## Requirements
+This template is designed to work with:
+
+- [Rails 5.0.x][]
+- [PostgresQL][]
+- [Redis][]
+
+The template requires that you have rails `~> 5.0` so before using it
 make sure you have the new release with:
 
 ```
 $ gem install rails
 ```
 
+
+## Installation
+To make this template the default template used for all new rails
+applications, create (or modify) a `~/.railsrc` file and add:
+
+```
+-d postgresql
+-m https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master/saas_template.rb
+```
+
 ## Usage
 The template can be easily used during the creation of a new Rails 5
-application by using the following:
+application in several ways.
 
 ```
-$ rails new app_name -m https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master/saas_template.rb
-```
-
-If you want to customize the template before using it just clone the
-repo and modify the desired files.
-
-```
-git clone https://github.com/badmonkeys/bad_monkey_rails.git
-```
-
-the cloned template can be used with
-
-```
-$ rails new app_name -m /local/path/to/cloned/saas_template.rb
+$ rails new app_name \
+    -d postgresql \
+    -m https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master/saas_template.rb
 ```
 
 ## Features
@@ -65,7 +70,16 @@ $ production logs
 $ production addons:create ...
 ```
 
+
+## Customization
+Fork It! This is just a quick starting point built from my workflow and
+default tools.  Feel free to fork it, clone it, flame it, whatever. Just
+make sure to make it your own!
+
 [Devise]:https://github.com/plataformatec/devise
 [binstubs]:https://github.com/tpope/heroku-binstubs
 [Matt Brictson's]:https://github.com/mattbrictson
 [rails-template]:https://github.com/mattbrictson/rails-template
+[Rails 5.0.x]:https://github.com/rails/rails
+[PostgresQL]:https://www.postgresql.org/
+[Redis]:http://redis.io
