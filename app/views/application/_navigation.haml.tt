@@ -3,7 +3,7 @@
     &#9776;
   #navbarCollapse.collapse.navbar-toggleable-xs
     %a.navbar-brand{ href: root_path }
-      <%= app_name %>
+      <%= app_name.titleize %>
     %ul.nav.navbar-nav
       %li.nav-item.active
         %a.nav-link{ href: root_path }
