@@ -1,0 +1,53 @@
+source 'https://rubygems.org'
+
+gem 'autoprefixer-rails'
+gem 'bullet'
+gem 'bundler-audit'
+gem 'bootstrap'
+gem 'coffee-rails'<%= gemfile_requirement('coffee-rails') %>
+gem 'devise'
+gem 'flipper-active_record'
+gem 'goldiloader'
+gem 'haml'
+gem 'high_voltage'
+gem 'jquery-rails'
+gem 'newrelic_rpm'
+gem 'pg'
+gem 'pry-rails'
+gem 'puma'<%= gemfile_requirement('puma') %>
+gem 'rails', '<%= Rails.version %>'
+
+source 'https://rails-assets.org' do
+  gem 'rails-assets-tether'
+end
+
+gem 'sass-rails'<%= gemfile_requirement('sass-rails') %>
+gem 'sidekiq'
+gem 'turbolinks'<%= gemfile_requirement('turbolinks') %>
+gem 'uglifier'<%= gemfile_requirement('uglifier') %>
+
+group :development do
+  gem 'web-console'
+end
+
+group :development, :test do
+  gem 'capybara'
+  gem 'database_cleaner'
+  gem 'dotenv-rails'
+  gem 'factory_girl_rails'
+  gem 'foreman'
+  gem 'guard-bundler', require: false
+  gem 'guard-rspec',   require: false
+  gem 'listen'<%= gemfile_requirement('listen') %>
+  gem 'pry-byebug'
+  gem 'rspec-rails'
+  gem 'simplecov', require: false
+  gem 'spring'
+  gem 'spring-commands-rspec'
+  gem 'spring-watcher-listen'<%= gemfile_requirement('spring-watcher-listen') %>
+end
+
+group :production do
+  gem 'heroku-deflater'
+  gem 'rails_12factor'
+end

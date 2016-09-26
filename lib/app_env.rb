@@ -14,6 +14,14 @@ class AppEnv
     end
   end
 
+  def self.try(key)
+    if include? key
+      ENV.fetch(key.to_s.upcase)
+    else
+      nil
+    end
+  end
+
   def self.include?(key)
     ENV.include?(key.to_s.upcase)
   end
