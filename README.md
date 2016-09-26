@@ -26,7 +26,7 @@ applications, create (or modify) a `~/.railsrc` file and add:
 
 ```
 -d postgresql
--m https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master/saas_template.rb
+-m https://raw.githubusercontent.com/badmonkeys/saas_monkey/master/template.rb
 ```
 
 ## Usage
@@ -36,7 +36,7 @@ application in several ways.
 ```
 $ rails new app_name \
     -d postgresql \
-    -m https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master/saas_template.rb
+    -m https://raw.githubusercontent.com/badmonkeys/saas_monkey/master/template.rb
 ```
 
 ## Features
