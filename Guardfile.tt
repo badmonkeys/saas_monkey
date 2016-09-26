@@ -37,12 +37,11 @@ guard :rspec, cmd: "bundle exec spring rspec --drb" do
 
   watch(rails.controllers) do |m|
     puts "caught change to controller #{m}"
-    stripped = m[1].gsub('v1/', '')
     [
-      rspec.spec.("routing/#{stripped}_routing"),
-      rspec.spec.("controllers/#{stripped}_controller"),
-      rspec.spec.("acceptance/#{stripped}"),
-      rspec.spec.("requests/#{stripped}")
+      rspec.spec.("routing/#{m[1]}_routing"),
+      rspec.spec.("controllers/#{m[1]}_controller"),
+      rspec.spec.("acceptance/#{m[1]}"),
+      rspec.spec.("requests/#{m[1]}")
     ]
   end
 

@@ -1,253 +1,119 @@
-$repo_url = 'https://raw.githubusercontent.com/badmonkeys/bad_monkey_rails/master'
+RAILS_REQUIREMENT = "~> 5.0"
+
+require 'pry'
+require 'fileutils'
+require 'shellwords'
+
+def apply_template!
+  validate_environment
+
+  template 'Gemfile.tt', force: true
+  template 'README.md.tt', force: true
+  remove_file 'README.rdoc'
+  copy_file 'Procfile'
+  template 'Guardfile.tt'
+  copy_file 'gitignore', '.gitignore', force: true
+  template 'ruby-version.tt', '.ruby-version'
+  template 'sample.env.tt'
+
+  apply('devise.rb') if apply_devise?
+
+  apply('app/template.rb')
+  apply('bin/template.rb')
+  apply('config/template.rb')
+  apply('lib/template.rb')
+  apply('spec/template.rb')
+
+  rails_command('db:create db:migrate')
+
+  apply('heroku.rb') if apply_heroku?
+
+  run 'spring stop'
+end
+
+def validate_environment
+  assert_minimum_rails_version
+  assert_valid_options
+  assert_postgresql
+  add_template_repository_to_source_path
+end
+
+def assert_minimum_rails_version
+  req = Gem::Requirement.new(RAILS_REQUIREMENT)
+  rails_version = Gem::Version.new(Rails::VERSION::STRING)
+  return if req.satisfied_by?(rails_version)
+
+  prompt = "This template requires Rails #{RAILS_REQUIREMENT}. "\
+           "You are using #{rails_version}. Continue anyway?"
+
+  exit 1 if no?(prompt)
+end
+
+def assert_valid_options
+  # TODO: Add support for api only option
+  valid_options = {
+    skip_gemfile: false,
+    skip_bundle: false,
+    skip_git: false,
+    edge: false
+  }
+
+  valid_options.each do |key, exp|
+    next unless options.key?(key)
+    actual = options[key]
+    unless actual == exp
+      fail Rails::Generators::Error, "Unsupported option #{key}=#{actual}"
+    end
+  end
+end
+
+def assert_postgresql
+  return if IO.read("Gemfile") =~ /^\s*gem ['"]pg['"]/
+  fail Rails::Generators::Error,
+    "This template requires PostgresQL, "\
+    "but the pg gem isn't present in your Gemfile."
+end
+
+def add_template_repository_to_source_path
+  if __FILE__ =~ %r{\Ahttps?://}
+    source_paths.unshift(tmpDir = Dir.mktmpdir('saas-monkey-template-'))
+    at_exit { FileUtils.remove_entry(tmpDir) }
+
+    git clone: [
+      '--quiet',
+      'https://github/badmonkeys/bad_monkey_rails.git',
+      tmpDir
+    ].map(&:shellescape).join(' ')
+  else
+    source_paths.unshift(File.dirname(__FILE__))
+  end
+end
+
+def gemfile_requirement(name)
+  @original_gemfile ||= IO.read("Gemfile")
+  req = @original_gemfile[/gem\s+['"]#{name}['"]\s*(,[><~= \t\d\.\w'"]*).*$/, 1]
+  req && req.gsub("'", %(")).strip.sub(/^,\s*"/, ', "')
+end
 
 def remove_comments_for(filename)
   gsub_file filename, /^\s*#.*\n/, ''
 end
 
-def remove_default_gemfile
-  comment_lines 'Gemfile', ''
-  remove_comments_for('Gemfile')
+def ask_with_default(question, color, default)
+  return default unless $stdin.tty?
+  question = (question.split("?") << " [#{default}]?").join
+  answer = ask(question, color)
+  answer.to_s.strip.empty? ? default : answer
 end
 
-def append_to_file(filename, contents)
-  open(filename, 'a') {|f| f.puts contents }
+def apply_devise?
+  @apply_devise ||= ask_with_default('Setup Devise for authentication?', :white, 'n')\
+    =~ /^y(es)?/i
 end
 
-def repo_get(path)
-  get "#{$repo_url}/#{path}", path
+def apply_heroku?
+  @apply_heroku ||= ask_with_default('Setup a new Heroku app using CLI?', :white, 'n')\
+    =~ /^y(es)?/i
 end
 
-# =============================================================================
-# Gem setup
-remove_default_gemfile
-add_source 'https://rubygems.org'
-
-gem 'autoprefixer-rails'
-gem 'bullet'
-gem 'bundler-audit'
-gem 'bootstrap'
-gem 'coffee-rails', '~> 4.2'
-gem 'devise'
-gem 'flipper-active_record'
-gem 'goldiloader'
-gem 'haml'
-gem 'high_voltage'
-gem 'jquery-rails'
-gem 'newrelic_rpm'
-gem 'pg'
-gem 'pry-rails'
-gem 'puma', '~> 3.0'
-gem 'rails', '~> 5.0.0.1'
-add_source 'https://rails-assets.org' do
-  gem 'rails-assets-tether'
-end
-gem 'sass-rails', '~> 5.0'
-gem 'sidekiq'
-gem 'turbolinks', '~> 5'
-gem 'uglifier', '>= 1.3.0'
-
-gem_group :development do
-  gem 'web-console'
-end
-
-gem_group :development, :test do
-  gem 'capybara'
-  gem 'database_cleaner'
-  gem 'dotenv-rails'
-  gem 'factory_girl_rails'
-  gem 'foreman'
-  gem 'guard-bundler', require: false
-  gem 'guard-rspec',   require: false
-  gem 'listen', '~> 3.0.5'
-  gem 'pry-byebug'
-  gem 'rspec-rails'
-  gem 'simplecov', require: false
-  gem 'spring'
-  gem 'spring-commands-rspec'
-  gem 'spring-watcher-listen', '~> 2.0.0'
-end
-
-gem_group :production do
-  gem 'heroku-deflater'
-  gem 'rails_12factor'
-end
-
-after_bundle do
-  # =============================================================================
-  # General Setup
-  remove_comments_for 'config/environments/test.rb'
-  remove_comments_for 'config/environments/development.rb'
-  remove_comments_for 'config/environments/production.rb'
-  remove_comments_for 'config/secrets.yml'
-  remove_comments_for 'config/routes.rb'
-
-  # =============================================================================
-  # General Setup
-  repo_get 'config/database.yml.sample'
-  run 'cp config/database.yml.sample config/database.yml'
-  gsub_file 'config/database.yml', /<APP_NAME>/, app_name
-  remove_comments_for('config/database.yml')
-  repo_get 'sample.env'
-  run 'cp sample.env .env'
-  repo_get 'lib/app_env.rb'
-  gsub_file 'config/application.rb', "require 'rails/all'", <<-EOF
-require 'rails/all'
-# load this lib now for access during configuration
-require './lib/app_env'
-EOF
-
-  log(:bad_monkey, 'there is a bug in asset compilation requiring a file to exist')
-  create_file 'app/assets/javascripts/channels/channel.js', ''
-
-  # =============================================================================
-  # Setup RSpec
-  run 'spring stop'
-  run 'rm -rf test/'
-  generate 'rspec:install'
-  uncomment_lines 'spec/rails_helper.rb', /Dir\[Rails\.root\.join/
-  run 'rm spec/spec_helper.rb'
-  repo_get 'spec/spec_helper.rb'
-  remove_comments_for 'spec/rails_helper.rb'
-
-  repo_get 'Guardfile'
-  repo_get 'spec/support/factory_girl.rb'
-  repo_get 'spec/support/database_cleaner.rb'
-  create_file 'spec/support/capybara.rb', <<-CODE
-require 'capybara/rspec'
-  CODE
-
-  # =============================================================================
-  # setup Puma
-  run 'rm config/puma.rb'
-  repo_get 'config/puma.rb'
-
-  # =============================================================================
-  # Setup Sidekiq
-  application 'config.active_job.queue_adapter = :sidekiq'
-
-  # =============================================================================
-  # Setup foreman
-  file 'Procfile', <<-CODE
-web: bundle exec puma -C config/puma.rb
-worker: bundle exec sidekiq -q default
-  CODE
-
-  # =============================================================================
-  # Setup flipper
-  generate('flipper:active_record')
-  initializer 'flipper.rb' , <<-CODE
-require 'flipper/adapters/active_record'
-$flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
-  CODE
-
-  # =============================================================================
-  # Setup Bootstrap
-  run "rm app/assets/stylesheets/application.css"
-  create_file 'app/assets/stylesheets/application.scss', <<-CODE
-@import 'bootstrap';
-  CODE
-  gsub_file 'app/assets/javascripts/application.js', /\/\/= require turbolinks/, <<-CODE
-//= require tether
-//= require bootstrap
-//= require turbolinks
-  CODE
-
-  # =============================================================================
-  # Setup application layout
-  run 'rm app/views/layouts/application.html.erb'
-  run 'rm app/helpers/application_helper.rb'
-  repo_get 'app/views/application/_navigation.haml'
-  repo_get 'app/views/layouts/application.html.erb'
-  gsub_file 'app/views/layouts/application.html.erb', /<APP_NAME>/, app_name.upcase
-  repo_get 'app/helpers/application_helper.rb'
-  gsub_file 'app/views/application/_navigation.haml', /<APP_NAME>/, app_name.upcase
-
-  # =============================================================================
-  # Setup HighVoltage for static pages
-  repo_get 'config/initializers/high_voltage.rb'
-  run 'mkdir app/views/pages'
-  repo_get 'app/views/pages/landing.haml'
-  repo_get 'app/views/pages/pricing.haml'
-  repo_get 'app/views/pages/about.haml'
-
-  # =============================================================================
-  # Setup Bullet
-  environment 'config.after_initialize do
-      Bullet.tap do |b|
-        b.enable        = true
-        b.alert         = true
-        b.bullet_logger = true
-        b.console       = true
-        b.rails_logger  = true
-      end
-    end',
-    env: :development
-
-    environment 'config.after_initialize do
-      Bullet.tap do |b|
-        b.enable        = true
-        b.bullet_logger = true
-        b.raise         = true
-      end
-    end',
-    env: :test
-
-  # =============================================================================
-  # Setup Devise
-  generate 'devise:install'
-  %i(development test).each do |env|
-    environment "config.action_mailer.default_url_options = {
-        protocol: 'http', host: 'localhost', port: AppEnv.port
-      }",
-      env: env
-  end
-  environment "config.action_mailer.default_url_options = {
-      protocol: 'https',
-      host: AppEnv.default_host,
-      port: AppEnv.port
-    }",
-    env: :production
-
-  remove_comments_for 'config/initializers/devise.rb'
-  gsub_file 'config/initializers/devise.rb', /config.mailer_sender(.*)$/,
-    "config.mailer_sender = AppEnv.try(:mail_sender) || 'please-change-me-at-config-initializers-devise@example.com'"
-  generate 'devise User'
-
-  # =============================================================================
-  # setup databases
-  rails_command 'db:drop db:create db:migrate db:test:prepare'
-
-  remove_comments_for 'app/models/user.rb'
-  generate 'devise:views users'
-  generate 'devise:controllers users'
-  gsub_file 'config/routes.rb', 'devise_for :users', <<-EOF
-devise_for :users,
-  controllers: {
-    sessions: 'users/sessions',
-    confirmations: 'users/confirmations',
-    passwords: 'users/passwords',
-    registrations: 'users/registrations',
-    unlocks: 'users/unlocks'
-  }
-EOF
-  run 'rm app/controllers/users/omniauth_callbacks_controller.rb'
-
-  # =============================================================================
-  # Setup Git
-  run 'rm .gitignore'
-  repo_get '.gitignore'
-  git :init
-
-  # =============================================================================
-  # Setup Heroku app
-  if yes?('Do you want to create a new heroku app for this project?')
-    run "heroku create #{app_name}"
-    run 'heroku plugins:install https://github.com/tpope/heroku-binstubs.git'
-    run "heroku binstubs:create #{app_name}"
-    run 'production addons:create heroku-postgresql:hobby-dev'
-    run 'production addons:create newrelic:wayne'
-    new_relic_key = `production config:get NEW_RELIC_LICENSE_KEY`
-    run "newrelic install --license_key='#{new_relic_key}' '#{app_name}'"
-  end
-end
-
+apply_template!
