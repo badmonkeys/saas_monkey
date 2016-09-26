@@ -212,6 +212,11 @@ $flip = Flipper.new(Flipper::Adapters::ActiveRecord.new)
   gsub_file 'config/initializers/devise.rb', /config.mailer_sender(.*)$/,
     "config.mailer_sender = AppEnv.try(:mail_sender) || 'please-change-me-at-config-initializers-devise@example.com'"
   generate 'devise User'
+
+  # =============================================================================
+  # setup databases
+  rails_command 'db:drop db:create db:migrate db:test:prepare'
+
   remove_comments_for 'app/models/user.rb'
   generate 'devise:views users'
   generate 'devise:controllers users'
@@ -226,10 +231,6 @@ devise_for :users,
   }
 EOF
   run 'rm app/controllers/users/omniauth_callbacks_controller.rb'
-
-  # =============================================================================
-  # setup databases
-  rails_command 'db:drop db:create db:migrate db:test:prepare'
 
   # =============================================================================
   # Setup Git
