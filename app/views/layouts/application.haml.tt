@@ -1,0 +1,14 @@
+!!! 5
+%html
+  %head
+    %title
+      = <%= app_name %>
+      = " | #{yield(:page_title)}" if content_for(:page_title)
+
+    = csrf_meta_tags
+    = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+
+  %body
+    = render 'navigation'
+    = yield
