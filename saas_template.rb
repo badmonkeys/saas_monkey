@@ -81,7 +81,7 @@ def add_template_repository_to_source_path
 
     git clone: [
       '--quiet',
-      'https://github/badmonkeys/bad_monkey_rails.git',
+      'https://github.com/badmonkeys/bad_monkey_rails.git',
       tmpDir
     ].map(&:shellescape).join(' ')
   else
