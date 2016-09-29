@@ -16,6 +16,7 @@ gem 'pg'
 gem 'pry-rails'
 gem 'puma'<%= gemfile_requirement('puma') %>
 gem 'rails', '<%= Rails.version %>'
+gem 'react-rails'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-tether'
