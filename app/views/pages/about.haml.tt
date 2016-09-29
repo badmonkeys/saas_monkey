@@ -1,3 +1,2 @@
 = content_for :page_title, 'About Us'
-%h1
-  About
+= react_component 'AboutPageContent'
