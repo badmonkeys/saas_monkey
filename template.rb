@@ -16,7 +16,9 @@ def apply_template!
   template 'ruby-version.tt', '.ruby-version'
   template 'sample.env.tt'
 
-  apply('devise.rb') if apply_devise?
+  unless ENV['MINIMAL']
+    apply('devise.rb') if apply_devise?
+  end
 
   apply('app/template.rb')
   apply('bin/template.rb')
@@ -26,9 +28,12 @@ def apply_template!
 
   rails_command('db:create db:migrate')
 
-  apply('heroku.rb') if apply_heroku?
+  generate_spring_binstubs
 
-  run 'spring stop'
+  unless ENV['MINIMAL']
+    apply('git.rb') if apply_git?
+    apply('heroku.rb') if apply_heroku?
+  end
 end
 
 def validate_environment
@@ -52,10 +57,11 @@ end
 def assert_valid_options
   # TODO: Add support for api only option
   valid_options = {
-    skip_gemfile: false,
-    skip_bundle: false,
-    skip_git: false,
-    edge: false
+    'skip_gemfile' => false,
+    'skip_bundle' => false,
+    'skip_git' => false,
+    'edge' => false,
+    'api' => false
   }
 
   valid_options.each do |key, exp|
@@ -113,6 +119,11 @@ end
 
 def apply_heroku?
   @apply_heroku ||= ask_with_default('Setup a new Heroku app using CLI?', :white, 'n')\
+    =~ /^y(es)?/i
+end
+
+def apply_git?
+  @apply_git ||= ask_with_default('Initialize GIT?', :white, 'y')\
     =~ /^y(es)?/i
 end
 
