@@ -20,6 +20,7 @@ gem 'react-rails'
 
 source 'https://rails-assets.org' do
   gem 'rails-assets-tether'
+  gem 'rails-assets-react-bootstrap'
 end
 
 gem 'sass-rails'<%= gemfile_requirement('sass-rails') %>
