@@ -18,7 +18,6 @@ gem 'pg'
 gem 'pry-rails'
 gem 'puma'<%= gemfile_requirement('puma') %>
 gem 'rails', '<%= Rails.version %>'
-gem 'react-rails'
 
 gem 'sass-rails'<%= gemfile_requirement('sass-rails') %>
 gem 'sidekiq'

@@ -1,3 +1,0 @@
-class @PricingPageContent extends React.Component
-  render: ->
-    `<h1>Pricing</h1>`
