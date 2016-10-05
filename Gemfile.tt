@@ -3,7 +3,9 @@ source 'https://rubygems.org'
 gem 'autoprefixer-rails'
 gem 'bullet'
 gem 'bundler-audit'
-gem 'bootstrap'
+gem 'bourbon'
+gem 'neat'
+gem 'normalize-rails'
 gem 'coffee-rails'<%= gemfile_requirement('coffee-rails') %>
 gem 'devise'
 gem 'flipper-active_record'
@@ -18,17 +20,14 @@ gem 'puma'<%= gemfile_requirement('puma') %>
 gem 'rails', '<%= Rails.version %>'
 gem 'react-rails'
 
-source 'https://rails-assets.org' do
-  gem 'rails-assets-tether'
-  gem 'rails-assets-react-bootstrap'
-end
-
 gem 'sass-rails'<%= gemfile_requirement('sass-rails') %>
 gem 'sidekiq'
 gem 'turbolinks'<%= gemfile_requirement('turbolinks') %>
 gem 'uglifier'<%= gemfile_requirement('uglifier') %>
 
 group :development do
+  gem 'bitters'
+  gem 'refills'
   gem 'web-console'
 end
 
