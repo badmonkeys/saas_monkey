@@ -1,11 +1,13 @@
 def setup_git!
-  git :init
-  git add: "-A ."
-  git commit: "-n -m 'Creates initial project with saas_monkey'"
+  after_bundle do
+    git :init
+    git add: "-A ."
+    git commit: "-n -m 'Creates initial project with saas_monkey'"
 
-  if repo_specified?
-    git remote: "add origin #{git_repo_url}"
-    git push: "-u origin --all"
+    if repo_specified?
+      git remote: "add origin #{git_repo_url}"
+      git push: "-u origin --all"
+    end
   end
 end
 

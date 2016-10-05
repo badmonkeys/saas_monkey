@@ -1,16 +1,16 @@
 %header.navigation{ role: 'banner' }
   .navigation-wrapper
-    %a.logo{ href: '#'}
+    %a.logo{ href: page_path(:landing) }
       %img{ src: "https://raw.githubusercontent.com/thoughtbot/refills/master/source/images/placeholder_square.png", alt: "Logo Image" }
-    %a#js-mobile-menu.navigation-menu-button{ href: '#' }
+    %a#js-mobile-menu.navigation-menu-button{ href: 'javascript:void(0)' }
       Menu
     %nav{ role: 'navigation' }
       %ul#js-navigation-menu.navigation-menu.show
         %li.nav-link
-          %a{ href: '#' }
+          %a{ href: page_path(:about) }
             About Us
         %li.nav-link
-          %a{ href: '#' }
+          %a{ href: page_path(:pricing) }
             Pricing
 
     .navigation-tools
