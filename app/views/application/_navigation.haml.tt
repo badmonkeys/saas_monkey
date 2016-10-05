@@ -1,19 +1,21 @@
-%nav.navbar.navbar-full.navbar-dark.bg-inverse
-  %button.navbar-toggler.hidden-sm-up{ type: 'button' }
-    &#9776;
-  #navbarCollapse.collapse.navbar-toggleable-xs
-    %a.navbar-brand{ href: root_path }
-      <%= app_name.titleize %>
-    %ul.nav.navbar-nav
-      %li.nav-item.active
-        %a.nav-link{ href: root_path }
-          Home
-          %span.sr-only
-            (current)
-      %li.nav-item
-        %a.nav-link{ href: page_path('pricing') }
-          Pricing
-      %li.nav-item
-        %a.nav-link{ href: page_path('about') }
-          About
+%header.navigation{ role: 'banner' }
+  .navigation-wrapper
+    %a.logo{ href: '#'}
+      %img{ src: "https://raw.githubusercontent.com/thoughtbot/refills/master/source/images/placeholder_square.png", alt: "Logo Image" }
+    %a#js-mobile-menu.navigation-menu-button{ href: '#' }
+      Menu
+    %nav{ role: 'navigation' }
+      %ul#js-navigation-menu.navigation-menu.show
+        %li.nav-link
+          %a{ href: '#' }
+            About Us
+        %li.nav-link
+          %a{ href: '#' }
+            Pricing
 
+    .navigation-tools
+      .search-bar
+        %form{ role: 'search' }
+          %input{ type: 'search', placeholder: 'Enter Search' }
+          %button{ type: 'submit' }
+            %img{ src: "https://raw.githubusercontent.com/thoughtbot/refills/master/source/images/search-icon.png", alt: "Search Icon" }
