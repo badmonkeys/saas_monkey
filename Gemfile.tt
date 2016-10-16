@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
 
+ruby '2.3.1'
+
 gem 'autoprefixer-rails'
 gem 'bullet'
 gem 'bundler-audit'
@@ -13,12 +15,12 @@ gem 'goldiloader'
 gem 'haml'
 gem 'high_voltage'
 gem 'jquery-rails'
+gem 'listen'<%= gemfile_requirement('listen') %>
 gem 'newrelic_rpm'
 gem 'pg'
 gem 'pry-rails'
 gem 'puma'<%= gemfile_requirement('puma') %>
 gem 'rails', '<%= Rails.version %>'
-
 gem 'sass-rails'<%= gemfile_requirement('sass-rails') %>
 gem 'sidekiq'
 gem 'turbolinks'<%= gemfile_requirement('turbolinks') %>
@@ -26,26 +28,29 @@ gem 'uglifier'<%= gemfile_requirement('uglifier') %>
 
 group :development do
   gem 'bitters'
-  gem 'refills'
-  gem 'web-console'
-end
-
-group :development, :test do
-  gem 'capybara'
-  gem 'database_cleaner'
-  gem 'dotenv-rails'
-  gem 'factory_girl_rails'
   gem 'foreman'
   gem 'guard-bundler', require: false
   gem 'guard-rspec',   require: false
-  gem 'listen'<%= gemfile_requirement('listen') %>
-  gem 'pry-byebug'
-  gem 'rspec-rails'
-  gem 'simplecov', require: false
+  gem 'refills'
   gem 'spring'
   gem 'spring-commands-rspec'
   gem 'spring-watcher-listen'<%= gemfile_requirement('spring-watcher-listen') %>
+  gem 'web-console'
 end
+
+group :test do
+  gem 'capybara'
+  gem 'database_cleaner'
+  gem 'dotenv-rails'
+  gem 'pry-byebug'
+  gem 'rspec-rails'
+  gem 'simplecov', require: false
+end
+
+group :development, :test do
+  gem 'factory_girl_rails'
+end
+
 
 group :production do
   gem 'heroku-deflater'
