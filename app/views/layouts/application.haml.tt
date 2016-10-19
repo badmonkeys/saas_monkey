@@ -5,6 +5,7 @@
       = '<%= app_name.titleize %>'
       = " | #{yield(:page_title)}" if content_for(:page_title)
 
+    %meta{ name: 'viewport', content: 'width=device-width, initial-scale=1' }
     = csrf_meta_tags
     = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
