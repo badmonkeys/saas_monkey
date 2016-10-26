@@ -13,8 +13,8 @@ end
 
 environment "config.action_mailer.default_url_options = {"\
   "protocol: 'https',"\
-  "host: AppEnv.email_host,"\
-  "port: AppEnv.email_host_port"\
+  "host: AppEnv.try(:email_host),"\
+  "port: AppEnv.try(:email_host_port)"\
   "}",
   env: :production
 
