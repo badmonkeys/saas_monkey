@@ -26,6 +26,8 @@ def apply_template!
   apply('lib/template.rb')
   apply('spec/template.rb')
 
+  run 'bundle install'
+
   rails_command('db:create db:migrate')
 
   generate_spring_binstubs
