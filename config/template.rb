@@ -1,5 +1,6 @@
 template 'config/database.sample.yml.tt', force: true
 copy_file 'config/puma.rb', force: true
+copy_file 'config/sidekiq.yml'
 
 insert_into_file 'config/application.rb', after: /require ['"]rails\/all['"].*\n/ do
   <<-APP.strip_heredoc
