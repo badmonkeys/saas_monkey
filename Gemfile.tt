@@ -54,6 +54,8 @@ end
 
 
 group :production do
-  gem 'heroku-deflater'
+  gem 'heroku-deflater',
+    git: 'https://github.com/romanbsd/heroku-deflater.git',
+    ref: '60d92ba'
   gem 'rails_12factor'
 end
