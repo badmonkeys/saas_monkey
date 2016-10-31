@@ -43,6 +43,17 @@ def validate_environment
   assert_valid_options
   assert_postgresql
   add_template_repository_to_source_path
+  set_template_options
+end
+
+def set_template_options
+  @t_options ||= {}
+  args.each_with_index do |a, i|
+    if a.include?('--m_')
+      @t_options[a.gsub('--m_', '')] = args[i + 1]
+    end
+  end
+  @t_options
 end
 
 def assert_minimum_rails_version
