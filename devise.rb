@@ -1,6 +1,4 @@
-def devise_class
-  @devise_class ||= ask_with_default('Devise model class?', :white, 'User').downcase.capitalize
-end
+run "bundle install"
 
 generate 'devise:install'
 
@@ -18,4 +16,4 @@ environment "config.action_mailer.default_url_options = {"\
   "}",
   env: :production
 
-generate "devise #{devise_class}"
+generate "devise #{@t_options[:user]}"

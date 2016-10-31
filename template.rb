@@ -7,17 +7,19 @@ require 'shellwords'
 def apply_template!
   validate_environment
 
-  template 'Gemfile.tt', force: true
-  template 'README.md.tt', force: true
+  template    'Gemfile.tt', force: true
+  template    'README.md.tt', force: true
   remove_file 'README.rdoc'
-  copy_file 'Procfile'
-  template 'Guardfile.tt'
-  copy_file 'gitignore', '.gitignore', force: true
-  template 'ruby-version.tt', '.ruby-version'
-  template 'sample.env.tt'
+  copy_file   'Procfile'
+  template    'Guardfile.tt'
+  copy_file   'gitignore', '.gitignore', force: true
+  template    'ruby-version.tt', '.ruby-version'
+  template    'sample.env.tt'
 
-  unless ENV['MINIMAL']
-    apply('devise.rb') if apply_devise?
+  run 'bundle install'
+
+  unless @t_options[:minimal]
+    apply('devise.rb') if @t_options[:devise]
   end
 
   apply('app/template.rb')
@@ -26,15 +28,13 @@ def apply_template!
   apply('lib/template.rb')
   apply('spec/template.rb')
 
-  run 'bundle install'
-
   rails_command('db:create db:migrate')
 
   generate_spring_binstubs
 
-  unless ENV['MINIMAL']
-    apply('git.rb') if apply_git?
-    apply('heroku.rb') if apply_heroku?
+  unless @t_options[:minimal]
+    apply('git.rb') if @t_options[:git]
+    apply('heroku.rb') if @t_options[:heroku]
   end
 end
 
@@ -47,13 +47,47 @@ def validate_environment
 end
 
 def set_template_options
+  parse_template_args
+
   @t_options ||= {}
+  @t_options.tap do |h|
+    h[:force]   = @t_args['force']     || false
+    h[:minimal] = @t_args['minimal']   || false
+    h[:git]     = @t_args['git']       || true
+    h[:heroku]  = @t_args['heroku']    || false
+    h[:devise]  = @t_args['devise']    || false
+    h[:user]    = @t_args['user']      || 'User'
+    h[:remote]  = @t_args['remote']
+  end
+
+  unless @t_options[:force] || @t_options[:minimal]
+    ask_option_questions
+  end
+end
+
+def ask_option_questions
+  @t_options[:git]    = ask_with_default('Initialize GIT?', :white, to_yn(@t_options[:git])) =~ /^y(es)?/i
+  @t_options[:devise] = ask_with_default('Setup Devise for authentication?', :white, to_yn(@t_options[:devise])) =~ /^y(es)?/i
+  if @t_options[:devise] && !@t_options[:user]
+    @t_options[:user] = ask_with_default('Devise model class?', :white, @t_options[:user]).downcase.capitalize
+  end
+
+  @t_options[:heroku] = ask_with_default('Setup a new Heroku app using CLI?', :white, to_yn(@t_options[:heroku])) =~ /^y(es)?/i
+end
+
+def parse_template_args
+  @t_args ||= {}
   args.each_with_index do |a, i|
     if a.include?('--m_')
-      @t_options[a.gsub('--m_', '')] = args[i + 1]
+      if a.include?('=')
+        pair = a.split('=')
+        @t_args[pair.first.gsub('--m_', '')] = pair.last
+      else
+        @t_args[a.gsub('--m_', '')] = true
+      end
     end
   end
-  @t_options
+  @t_args
 end
 
 def assert_minimum_rails_version
@@ -125,19 +159,8 @@ def ask_with_default(question, color, default)
   answer.to_s.strip.empty? ? default : answer
 end
 
-def apply_devise?
-  @apply_devise ||= ask_with_default('Setup Devise for authentication?', :white, 'n')\
-    =~ /^y(es)?/i
-end
-
-def apply_heroku?
-  @apply_heroku ||= ask_with_default('Setup a new Heroku app using CLI?', :white, 'n')\
-    =~ /^y(es)?/i
-end
-
-def apply_git?
-  @apply_git ||= ask_with_default('Initialize GIT?', :white, 'y')\
-    =~ /^y(es)?/i
+def to_yn(value)
+  value ? 'y' : 'n'
 end
 
 apply_template!
