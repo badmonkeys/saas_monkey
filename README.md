@@ -39,6 +39,23 @@ $ rails new app_name \
     -m https://raw.githubusercontent.com/badmonkeys/saas_monkey/master/template.rb
 ```
 
+### Command Line arguments
+The template responds to certain command line arguments passed to the
+`rails new` generator.  All of these commands start with `m_` like
+`--m_git`.  Most of the arguments are boolean and appear or don't.
+However, for arguments like `--m_remote` and `--m_user` a value must be
+set like this: `--m_user=Admin`.  The `=` is important.
+
+| Argument      | Type    | Notes                                                                                                                                                         |
+|---------------|---------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **m_git**     | Boolean | When present, sets up a new git repository and commits template output                                                                                        |
+| **m_remote**  | String  | Set with `--m_remote=BLAH`, sets the upstream URL for an origin git remote                                                                                    |
+| **m_devise**  | Boolean | When present, sets up devise                                                                                                                                  |
+| **m_user**    | String  | Set with `--m-user=Admin`, sets the class name used by Devise                                                                                                 |
+| **m_heroku**  | Boolean | When present, sets up a new heroku app and pushes the initial build _([Heroku Toolbelt] must be installed and logged in prior to running the template)_     |
+| **m_minimal** | Boolean | When present, runs only the basic install and skips all other setup including git, devise, heroku                                                             |
+| **m_force**   | Boolean | When present, no interactive questions are asked during installation _(Everything defaults to false, except git unless otherwise passed on the command line)_ |
+
 ## Features
 
 ### Gemset
@@ -76,10 +93,11 @@ Fork It! This is just a quick starting point built from my workflow and
 default tools.  Feel free to fork it, clone it, flame it, whatever. Just
 make sure to make it your own!
 
-[Devise]:https://github.com/plataformatec/devise
 [binstubs]:https://github.com/tpope/heroku-binstubs
+[Devise]:https://github.com/plataformatec/devise
+[Heroku Toolbelt]:https://devcenter.heroku.com/articles/heroku-command-line
 [Matt Brictson's]:https://github.com/mattbrictson
-[rails-template]:https://github.com/mattbrictson/rails-template
-[Rails 5.0.x]:https://github.com/rails/rails
 [PostgresQL]:https://www.postgresql.org/
+[Rails 5.0.x]:https://github.com/rails/rails
+[rails-template]:https://github.com/mattbrictson/rails-template
 [Redis]:http://redis.io
