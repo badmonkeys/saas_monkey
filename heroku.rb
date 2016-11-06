@@ -9,6 +9,7 @@ after_bundle do
     run "heroku binstubs:create #{heroku_name}"
     run 'production addons:create heroku-postgresql:hobby-dev'
     run 'production addons:create newrelic:wayne'
+    run 'production addons:create heroku-redis:hobby-dev'
     run 'production buildpacks:set heroku/ruby'
     run 'production buildpacks:add https://github.com/gunpowderlabs/buildpack-ruby-rake-deploy-tasks'
     run 'production config:set DEPLOY_TASKS=db:migrate'
