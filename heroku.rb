@@ -15,13 +15,11 @@ after_bundle do
     new_relic_key = `production config:get NEW_RELIC_LICENSE_KEY`
     run "newrelic install --license_key='#{new_relic_key}' '#{heroku_name}'"
 
-    if apply_git?
-      run "production git:remote --app #{heroku_name} -r production"
+    run "production git:remote --app #{heroku_name} -r production"
 
-      git add: '-A .'
-      git commit: '-m "Sets up heroku integration"'
-      git push: 'production master'
-    end
+    git add: '-A .'
+    git commit: '-m "Sets up heroku integration"'
+    git push: 'production master'
   else
     fail Rails::Generators::Error, "Heroku toolbelt is not installed."\
       "Install it from https://devcenter.heroku.com/articles/heroku-command-line"
