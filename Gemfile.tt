@@ -6,7 +6,7 @@ gem 'autoprefixer-rails'
 gem 'bullet'
 gem 'bundler-audit'
 gem 'bourbon'
-gem 'neat'
+gem 'neat', '~> 1.9'
 gem 'normalize-rails'
 gem 'coffee-rails'<%= gemfile_requirement('coffee-rails') %>
 gem 'devise'
