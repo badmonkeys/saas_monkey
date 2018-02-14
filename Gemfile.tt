@@ -17,7 +17,7 @@ gem 'high_voltage'
 gem 'jquery-rails'
 gem 'listen'<%= gemfile_requirement('listen') %>
 gem 'newrelic_rpm'
-gem 'pg'
+gem 'pg', '~> 0.18'
 gem 'pry-rails'
 gem 'puma'<%= gemfile_requirement('puma') %>
 gem 'rails', '<%= Rails.version %>'
